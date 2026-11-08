@@ -7,13 +7,18 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
 export function displayName(user: User | null, profile?: Profile | null) {
-  if (profile?.full_name) return profile.full_name;
-  const metadataName =
-    (user?.user_metadata?.full_name as string | undefined) ??
-    (user?.user_metadata?.name as string | undefined) ??
-    (user?.user_metadata?.user_name as string | undefined);
-  if (metadataName) return metadataName;
-  return user?.email?.split("@")[0] ?? "Pilot";
+  const candidates = [
+    profile?.full_name,
+    user?.user_metadata?.full_name as string | undefined,
+    user?.user_metadata?.name as string | undefined,
+    user?.user_metadata?.user_name as string | undefined,
+    user?.email?.split("@")[0],
+  ];
+  for (const candidate of candidates) {
+    const trimmed = typeof candidate === "string" ? candidate.trim() : "";
+    if (trimmed) return trimmed;
+  }
+  return "Pilot";
 }
 
 export function avatarUrl(user: User | null, profile?: Profile | null) {

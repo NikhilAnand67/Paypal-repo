@@ -33,6 +33,15 @@ export function LandingNav() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
   return (
     <header
       className={cn(
@@ -72,6 +81,7 @@ export function LandingNav() {
           onClick={() => setOpen((value) => !value)}
           className="focus-ring grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-white md:hidden"
           aria-expanded={open}
+          aria-controls="mobile-menu"
           aria-label={open ? "Close menu" : "Open menu"}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -79,7 +89,13 @@ export function LandingNav() {
       </nav>
 
       {open ? (
-        <div className="fixed inset-x-0 top-20 bottom-0 z-40 overflow-y-auto border-t border-white/[0.07] bg-ink-950/97 px-6 pb-10 pt-6 backdrop-blur-2xl md:hidden">
+        <div
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          className="fixed inset-x-0 top-20 bottom-0 z-40 overflow-y-auto border-t border-white/[0.07] bg-ink-950/97 px-6 pb-10 pt-6 backdrop-blur-2xl md:hidden"
+        >
           <div className="flex flex-col gap-1">
             {links.map((link) => (
               <a

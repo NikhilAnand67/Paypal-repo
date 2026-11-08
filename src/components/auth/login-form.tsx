@@ -26,13 +26,23 @@ const errorCopy: Record<string, string> = {
   supabase_not_configured:
     "Supabase is not configured yet. Add the project URL and publishable key to .env.local.",
   provider_sign_in_failed:
-    "The provider did not finish the sign in. Check that Google or GitHub OAuth is enabled in Supabase.",
+    "The provider did not finish the sign in. Confirm the OAuth callback URL and that the provider is enabled in Supabase.",
   missing_code: "The sign in response was incomplete. Please try again.",
   auth_callback_failed: "We could not verify that sign in. Please try again.",
   session_not_established: "The session was not created. Please try again.",
 };
 
-export function LoginForm({ next, initialError }: { next: string; initialError?: string }) {
+export function LoginForm({
+  next,
+  initialError,
+  providers,
+  signedOut,
+}: {
+  next: string;
+  initialError?: string;
+  providers: { google: boolean | null; github: boolean | null };
+  signedOut?: boolean;
+}) {
   const router = useRouter();
   const configured = isSupabaseConfigured();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -44,11 +54,21 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
   const [error, setError] = useState<string | null>(
     initialError ? errorCopy[initialError] ?? "Sign in failed. Please try again." : null
   );
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(
+    signedOut ? "You have been signed out securely. Sign in again when you are ready." : null
+  );
 
   async function startOauth(provider: "google" | "github") {
     setError(null);
     setNotice(null);
+
+    if (providers[provider] === false) {
+      setError(
+        `${provider === "google" ? "Google" : "GitHub"} sign in is not enabled for this workspace yet. Email and password works now; add the provider credentials in Supabase to turn it on.`
+      );
+      return;
+    }
+
     setOauthLoading(provider);
     try {
       const supabase = createClient();
@@ -220,6 +240,15 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
           GitHub
         </Button>
       </div>
+
+      {providers.google === false || providers.github === false ? (
+        <p className="mt-2.5 text-[11px] leading-5 text-slate-500" role="status">
+          {providers.google === false && providers.github === false
+            ? "Social sign in is waiting on provider credentials."
+            : `${providers.google === false ? "Google" : "GitHub"} sign in is waiting on provider credentials.`}{" "}
+          Email and password is fully active.
+        </p>
+      ) : null}
 
       <div className="my-6 flex items-center gap-3">
         <span className="h-px flex-1 bg-white/[0.08]" />

@@ -146,8 +146,14 @@ export function SettingsForm({
   async function signOut() {
     setSigningOut(true);
     try {
-      await fetch("/auth/signout", { method: "POST" });
-      router.replace("/");
+      const response = await fetch("/auth/signout", { method: "POST" });
+      if (!response.ok) {
+        toast.error("Sign out failed. Try again.");
+        setSigningOut(false);
+        return;
+      }
+      toast.success("Signed out. Your session is closed.");
+      router.replace("/login?signed_out=1");
       router.refresh();
     } catch {
       toast.error("Sign out failed. Try again.");

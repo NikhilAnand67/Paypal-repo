@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppToaster } from "@/components/ui/app-toaster";
+import { appUrl as getAppUrl } from "@/lib/config/status";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const appUrl = getAppUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
@@ -34,8 +35,10 @@ export const metadata: Metadata = {
     "freelancers",
     "cash flow",
   ],
-  authors: [{ name: "PayPilot AI" }],
-  creator: "PayPilot AI",
+  authors: [{ name: "Nikhil Anand" }],
+  creator: "Nikhil Anand",
+  publisher: "PayPilot AI",
+  formatDetection: { telephone: false },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -54,6 +57,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   applicationName: "PayPilot AI",
   category: "finance",
+  appleWebApp: {
+    capable: true,
+    title: "PayPilot AI",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {

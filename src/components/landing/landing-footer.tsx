@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/brand-icons";
+import { ProfileLinks } from "@/components/site/profile-links";
+import { siteProfile } from "@/lib/site/profile";
 import { Logo } from "@/components/ui/brand";
 
 const columns = [
@@ -37,9 +38,18 @@ export function LandingFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/[0.07] bg-ink-950">
-      <div className="section-shell py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.3fr_2fr]">
+    <footer className="relative overflow-hidden border-t border-white/[0.07] bg-ink-950">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -top-44 left-1/2 h-80 w-[42rem] -translate-x-1/2 rounded-full bg-violet-600/10 blur-3xl"
+        aria-hidden="true"
+      />
+
+      <div className="section-shell relative py-14">
+        <div className="grid gap-10 lg:grid-cols-[1.25fr_2fr]">
           <div>
             <Logo />
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">
@@ -54,7 +64,7 @@ export function LandingFooter() {
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {columns.map((column) => (
-              <div key={column.title}>
+              <nav key={column.title} aria-label={column.title}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
                   {column.title}
                 </p>
@@ -70,36 +80,54 @@ export function LandingFooter() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </nav>
             ))}
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-5 border-t border-white/[0.07] pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 grid gap-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+              Designed and built by
+            </p>
+            <p className="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">
+              {siteProfile.name}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">{siteProfile.role}</p>
+          </div>
+          <div className="flex flex-col gap-2.5 sm:items-end">
+            <ProfileLinks variant="inline" />
+            <p className="text-[11px] text-slate-500">
+              Open to collaborations, product work, and new ideas.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-5 border-t border-white/[0.07] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-2xl text-xs leading-5 text-slate-500">
             © {year} PayPilot AI. Built for the Build What&apos;s Next with PayPal and AI hackathon.
             PayPal, the PayPal logo, and related marks are trademarks of PayPal. This project is not
             affiliated with or endorsed by PayPal. Sandbox only, no live payment processing.
           </p>
-          <div className="flex items-center gap-2">
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="focus-ring grid h-9 w-9 place-items-center rounded-lg border border-white/10 text-slate-400 transition-colors hover:border-white/20 hover:text-white"
-              aria-label="GitHub"
+          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+            <Link
+              href="/privacy"
+              className="focus-ring rounded transition-colors hover:text-slate-300"
             >
-              <GithubIcon />
-            </a>
-            <a
-              href="https://www.linkedin.com"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="focus-ring grid h-9 w-9 place-items-center rounded-lg border border-white/10 text-slate-400 transition-colors hover:border-white/20 hover:text-white"
-              aria-label="LinkedIn"
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="focus-ring rounded transition-colors hover:text-slate-300"
             >
-              <LinkedinIcon />
-            </a>
+              Terms
+            </Link>
+            <Link
+              href="/login"
+              className="focus-ring rounded transition-colors hover:text-slate-300"
+            >
+              Sign in
+            </Link>
           </div>
         </div>
       </div>

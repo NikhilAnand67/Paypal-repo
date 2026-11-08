@@ -5,6 +5,7 @@ import { DemoExperience } from "@/components/demo/demo-experience";
 export const metadata: Metadata = {
   title: "Guided demo",
   description: "A twelve step tour of the PayPilot AI agent, invoice flow, and PayPal Sandbox checkout.",
+  alternates: { canonical: "/demo" },
 };
 
 export default async function DemoPage() {

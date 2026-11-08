@@ -13,13 +13,36 @@ export const metadata: Metadata = {
   title: "PayPilot AI — Think smarter. Pay faster. Stay in control.",
   description:
     "An AI financial agent that prepares invoices and payment requests, explains your cash flow, and waits for your approval before any PayPal Sandbox order is created.",
+  alternates: { canonical: "/" },
 };
 
 const stack = ["PayPal Orders v2", "Supabase", "Google Gemini", "Resend", "Vercel"];
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "PayPilot AI",
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Web",
+  description:
+    "An AI financial agent for invoices, payment requests, cash flow insight, and approval-gated PayPal Sandbox payments.",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  author: { "@type": "Person", name: "Nikhil Anand" },
+  featureList: [
+    "AI-prepared invoices and payment requests",
+    "Explicit confirmation before financial actions",
+    "PayPal Sandbox orders",
+    "Cash flow analytics from stored records",
+  ],
+};
+
 export default function Home() {
   return (
     <div className="relative min-h-dvh overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <LandingNav />
       <main id="main">
         <Hero />

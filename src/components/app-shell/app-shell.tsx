@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -32,6 +32,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/primitives";
 import { Logo } from "@/components/ui/brand";
+import { ProfileLinks } from "@/components/site/profile-links";
+import { siteProfile } from "@/lib/site/profile";
 import { initials, providerLabel } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { navItems, titleForPath } from "./nav-items";
@@ -105,6 +107,7 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const mobileCloseRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     try {
@@ -134,6 +137,41 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
     };
   }, [mobileOpen]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => mobileCloseRef.current?.focus(), 40);
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobileOpen(false);
+      }
+      if (event.key !== "Tab") return;
+      const dialog = document.getElementById("mobile-navigation");
+      const focusable = dialog?.querySelectorAll<HTMLElement>(
+        "a[href], button:not([disabled]), [tabindex='0']"
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", onKeyDown);
+      previous?.focus?.();
+    };
+  }, [mobileOpen]);
+
   function toggleCollapsed() {
     setCollapsed((value) => {
       const next = !value;
@@ -154,7 +192,8 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
         toast.error("Sign out failed. Please try again.");
         return;
       }
-      router.replace("/");
+      toast.success("Signed out. Your session is closed.");
+      router.replace("/login?signed_out=1");
       router.refresh();
     } catch {
       toast.error("Sign out failed. Please try again.");
@@ -260,7 +299,7 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col" inert={mobileOpen}>
           <header className="sticky top-0 z-30 border-b border-white/[0.07] bg-ink-950/80 backdrop-blur-xl">
             <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
               <button
@@ -268,6 +307,8 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
                 onClick={() => setMobileOpen(true)}
                 className="focus-ring grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-slate-300 lg:hidden"
                 aria-label="Open navigation"
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-navigation"
               >
                 <Menu className="h-4.5 w-4.5" aria-hidden="true" />
               </button>
@@ -368,9 +409,35 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
             </div>
           </header>
 
-          <main id="main" className="min-w-0 flex-1">
-            {children}
+          <main className="min-w-0 flex-1 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.045),transparent_48%)]">
+            <div id="main" className="min-h-full">
+              {children}
+            </div>
           </main>
+
+          <footer className="mt-auto border-t border-white/[0.06] px-4 py-5 sm:px-6">
+            <div className="flex flex-col gap-3 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+              <p>
+                PayPilot AI · Designed and built by{" "}
+                <span className="font-medium text-slate-400">{siteProfile.name}</span>
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href="/privacy"
+                  className="focus-ring rounded transition-colors hover:text-slate-300"
+                >
+                  Privacy
+                </Link>
+                <Link
+                  href="/terms"
+                  className="focus-ring rounded transition-colors hover:text-slate-300"
+                >
+                  Terms
+                </Link>
+                <ProfileLinks />
+              </div>
+            </div>
+          </footer>
         </div>
       </div>
 
@@ -382,10 +449,17 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
             onClick={() => setMobileOpen(false)}
             aria-label="Close navigation"
           />
-          <div className="absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col border-r border-white/10 bg-ink-925 shadow-2xl">
+          <div
+            id="mobile-navigation"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Workspace navigation"
+            className="absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col border-r border-white/10 bg-ink-925 shadow-2xl"
+          >
             <div className="flex h-16 items-center justify-between border-b border-white/[0.07] px-4">
               <Logo />
               <button
+                ref={mobileCloseRef}
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 className="focus-ring grid h-9 w-9 place-items-center rounded-lg text-slate-400 hover:bg-white/[0.05] hover:text-white"

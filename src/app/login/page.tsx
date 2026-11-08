@@ -3,12 +3,16 @@ import Link from "next/link";
 import { CheckCircle2, Lock, ShieldCheck, Sparkles } from "lucide-react";
 import { MoneyRain } from "@/components/three/money-rain";
 import { LoginForm } from "@/components/auth/login-form";
+import { ProfileLinks } from "@/components/site/profile-links";
 import { Logo } from "@/components/ui/brand";
 import { sanitizeNextPath } from "@/lib/auth/account";
+import { siteProfile } from "@/lib/site/profile";
+import { getAuthProviders } from "@/lib/supabase/providers";
 
 export const metadata: Metadata = {
   title: "Sign in",
   description: "Sign in with Google, GitHub, or email to open your PayPilot workspace.",
+  alternates: { canonical: "/login" },
 };
 
 export default async function LoginPage({
@@ -19,6 +23,8 @@ export default async function LoginPage({
   const params = await searchParams;
   const next = sanitizeNextPath(typeof params.next === "string" ? params.next : null);
   const error = typeof params.error === "string" ? params.error : undefined;
+  const signedOut = params.signed_out === "1";
+  const providers = await getAuthProviders();
 
   return (
     <div className="relative min-h-dvh overflow-hidden bg-ink-950">
@@ -82,12 +88,46 @@ export default async function LoginPage({
 
         <main id="main" className="relative flex min-h-dvh items-center justify-center px-6 py-14 sm:px-10">
           <div className="w-full max-w-md">
-            <LoginForm next={next} initialError={error} />
-            <p className="mt-8 text-center text-xs text-slate-600 lg:hidden">
-              <Link href="/" className="focus-ring rounded underline-offset-4 hover:text-slate-400 hover:underline">
-                Back to PayPilot
-              </Link>
-            </p>
+            <LoginForm
+              next={next}
+              initialError={error}
+              signedOut={signedOut}
+              providers={{ google: providers.google, github: providers.github }}
+            />
+
+            <footer className="mt-9 border-t border-white/[0.06] pt-6 text-[11px] text-slate-500">
+              <p className="text-center">
+                Designed and built by{" "}
+                <span className="font-medium text-slate-300">{siteProfile.name}</span>
+              </p>
+              <ProfileLinks variant="inline" className="mt-3 justify-center" />
+              <p className="mt-3 text-center leading-5">
+                <Link
+                  href="/"
+                  className="focus-ring rounded underline-offset-4 hover:text-slate-300 hover:underline"
+                >
+                  Back to PayPilot
+                </Link>
+                <span className="px-2 text-slate-700" aria-hidden="true">
+                  /
+                </span>
+                <Link
+                  href="/privacy"
+                  className="focus-ring rounded underline-offset-4 hover:text-slate-300 hover:underline"
+                >
+                  Privacy
+                </Link>
+                <span className="px-2 text-slate-700" aria-hidden="true">
+                  /
+                </span>
+                <Link
+                  href="/terms"
+                  className="focus-ring rounded underline-offset-4 hover:text-slate-300 hover:underline"
+                >
+                  Terms
+                </Link>
+              </p>
+            </footer>
           </div>
         </main>
       </div>

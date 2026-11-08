@@ -4,6 +4,7 @@ import { LegalShell } from "@/components/legal/legal-shell";
 export const metadata: Metadata = {
   title: "Terms",
   description: "Terms of use for the PayPilot AI Sandbox demonstration.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

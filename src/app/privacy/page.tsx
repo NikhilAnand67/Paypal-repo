@@ -4,6 +4,7 @@ import { LegalShell } from "@/components/legal/legal-shell";
 export const metadata: Metadata = {
   title: "Privacy",
   description: "How PayPilot AI handles account, ledger, and payment data in this Sandbox demonstration.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

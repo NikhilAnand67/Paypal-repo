@@ -26,6 +26,14 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  await supabase.auth.signOut();
-  return jsonOk({ ok: true });
+  const { error } = await supabase.auth.signOut({ scope: "local" });
+  if (error) {
+    return jsonError(502, "Your session could not be closed. Please try again.", {
+      code: "signout_failed",
+    });
+  }
+
+  const response = jsonOk({ ok: true });
+  response.headers.set("Cache-Control", "no-store, max-age=0");
+  return response;
 }

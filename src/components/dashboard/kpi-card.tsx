@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ProgressBar } from "@/components/ui/feedback";
+import { InfoTip } from "@/components/ui/info-tip";
 
 const tones = {
   violet: "text-violet-200 bg-violet-500/10 ring-violet-400/20",
@@ -14,6 +15,7 @@ export function KpiCard({
   label,
   value,
   hint,
+  detail,
   icon: Icon,
   tone = "violet",
   progress,
@@ -22,6 +24,7 @@ export function KpiCard({
   label: string;
   value: string;
   hint?: string;
+  detail?: string;
   icon: LucideIcon;
   tone?: keyof typeof tones;
   progress?: number;
@@ -30,12 +33,21 @@ export function KpiCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5",
+        "premium-panel premium-lift group relative overflow-hidden rounded-2xl p-5",
         className
       )}
     >
+      <span
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        aria-hidden="true"
+      />
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">{label}</p>
+        <span className="flex min-w-0 items-center gap-1.5">
+          <p className="truncate text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">
+            {label}
+          </p>
+          {detail ? <InfoTip label={label}>{detail}</InfoTip> : null}
+        </span>
         <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-lg ring-1 ring-inset", tones[tone])}>
           <Icon className="h-4 w-4" aria-hidden="true" />
         </span>

@@ -112,6 +112,7 @@ export default async function DashboardPage() {
           label={`Collected ${summary.baseCurrency}`}
           value={formatCurrency(summary.totalReceived, summary.baseCurrency)}
           hint={`${summary.completedCount} completed ${summary.completedCount === 1 ? "payment" : "payments"} in this currency`}
+          detail="Only completed PayPal captures in your base currency are counted. Other currencies are excluded rather than converted with an invented rate."
           icon={CircleDollarSign}
           tone="emerald"
         />
@@ -119,6 +120,7 @@ export default async function DashboardPage() {
           label="Outstanding"
           value={formatCurrency(summary.pendingAmount, summary.baseCurrency)}
           hint={`${summary.openInvoiceCount} open ${summary.openInvoiceCount === 1 ? "document" : "documents"} across invoices and requests`}
+          detail="Draft, pending, and overdue invoices or payment requests still awaiting settlement."
           icon={Clock3}
           tone="amber"
         />
@@ -126,6 +128,7 @@ export default async function DashboardPage() {
           label="Collection rate"
           value={formatPercent(summary.collectionRate)}
           hint={`${summary.paidInvoiceCount} paid of ${summary.paidInvoiceCount + summary.openInvoiceCount} billable records`}
+          detail="Paid billable records divided by all billable records, calculated from stored statuses."
           icon={Percent}
           tone="cyan"
           progress={summary.collectionRate}
@@ -134,6 +137,7 @@ export default async function DashboardPage() {
           label="Average payment"
           value={formatCurrency(summary.averagePayment, summary.baseCurrency)}
           hint="Completed captures only, never estimated"
+          detail="Completed captures divided by the number of completed payments. No projection or estimate is applied."
           icon={Wallet}
           tone="violet"
         />
@@ -149,7 +153,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-5 xl:grid-cols-[1.65fr_1fr]">
         <div className="space-y-5">
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5">
+          <div className="premium-panel rounded-2xl p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-sm font-semibold text-white">Cash flow</h2>
@@ -208,7 +212,7 @@ export default async function DashboardPage() {
         <div className="space-y-5">
           <InsightsCard insights={insights} />
 
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5">
+          <div className="premium-panel rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-white">Open documents</h2>
               <Badge tone="neutral">{openDocuments.length} shown</Badge>
@@ -261,7 +265,7 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5">
+          <div className="premium-panel rounded-2xl p-5">
             <h2 className="text-sm font-semibold text-white">Quick actions</h2>
             <div className="mt-4 grid gap-2">
               {quickActions.map((action) => (

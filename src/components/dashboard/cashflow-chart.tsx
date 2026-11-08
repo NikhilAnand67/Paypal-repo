@@ -56,9 +56,14 @@ export function CashflowChart({
   height?: number;
 }) {
   const gradientId = `received-${currency}`;
+  const collected = data.reduce((total, point) => total + point.received, 0);
+  const outstanding = data.reduce((total, point) => total + point.pending, 0);
+  const summary = hasData
+    ? `Cash flow over ${data.length} months. Collected ${formatCurrency(collected, currency)}. Outstanding ${formatCurrency(outstanding, currency)}.`
+    : "No payment history yet.";
 
   return (
-    <div className="relative" style={{ height }}>
+    <div className="relative" style={{ height }} role="img" aria-label={summary}>
       {!hasData ? (
         <div className="absolute inset-0 z-10 grid place-items-center rounded-xl bg-ink-925/40 px-6 text-center">
           <div>
@@ -71,7 +76,11 @@ export function CashflowChart({
       ) : null}
 
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
+        <AreaChart
+          data={data}
+          margin={{ top: 8, right: 4, left: 0, bottom: 0 }}
+          accessibilityLayer
+        >
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.42} />
@@ -107,6 +116,7 @@ export function CashflowChart({
             stroke="#a78bfa"
             strokeWidth={2}
             fill={`url(#${gradientId})`}
+            animationDuration={700}
             activeDot={{ r: 4, fill: "#a78bfa", stroke: "#06060b", strokeWidth: 2 }}
           />
           <Area
@@ -116,6 +126,7 @@ export function CashflowChart({
             strokeWidth={1.5}
             strokeDasharray="4 4"
             fill={`url(#${gradientId}-pending)`}
+            animationDuration={800}
             activeDot={{ r: 3, fill: "#67e8f9", stroke: "#06060b", strokeWidth: 2 }}
           />
         </AreaChart>
